@@ -5,9 +5,9 @@ class Checkout
 
   def initialize(pricing_rules)
     @pricing_rules = pricing_rules
-    @promotions = pricing_rules[:promotions]||=[]
-    @discounts = pricing_rules[:discounts]||=[]
-    @promotions_and_discounts = @promotions + @discounts
+    promotions = pricing_rules[:promotions]||=[]
+    discounts = pricing_rules[:discounts]||=[]
+    @promotions_and_discounts = promotions + discounts
     @products = []
   end
 
