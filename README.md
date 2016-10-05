@@ -22,7 +22,30 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Create a checkout machine:
+
+```ruby
+    checkout = Checkout.new ({ 'VOUCHER' => {name: 'Voucher',    price:  5.00} })
+```
+
+Scan product codes:
+
+```ruby
+    checkout.scan 'VOUCHER'
+```
+
+Get the total amount and the product list:
+
+```ruby
+    checkout.total #= 5.00
+    checkout.list  #= Voucher
+```
+
+## Next Steps
+
+Generalize discounts and promotions so it can take different values. Create them through a factory for ease of use.
+Allow to have more than one promotion or discount per product.
+Create multiproduct (bundles) promotions and discounts.
 
 ## Development
 
