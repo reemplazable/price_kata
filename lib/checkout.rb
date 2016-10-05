@@ -5,8 +5,9 @@ class Checkout
 
   def initialize(pricing_rules)
     @pricing_rules = pricing_rules
-    @promotions = pricing_rules[:promotions]
-    @discounts = pricing_rules[:discounts]
+    @promotions = pricing_rules[:promotions]||=[]
+    @discounts = pricing_rules[:discounts]||=[]
+    @promotions_and_discounts = @promotions + @discounts
     @products = []
   end
 
@@ -15,10 +16,9 @@ class Checkout
   end
 
   def total
-    promotions = create_promotions
-    discounts = create_discounts
+    promotions_and_discounts = create_promotions_and_discounts
     @products.map { |product|
-      calculate_price(promotions, discounts, product)
+      calculate_price(promotions_and_discounts, product)
     }.inject(0) { |sum, price|
       sum + price
     }
@@ -30,15 +30,15 @@ class Checkout
 
   private
 
-  def calculate_price(promotions, discounts, product)
-    promotions[product] ? promotions[product].price : (discounts[product] ? discounts[product].price : product[:price])
+  PROMOTIONS_AND_DISCOUNTS = {'TSHIRT' => Discount, 'VOUCHER' => TowForOne}
+
+  def calculate_price(promotions_and_discounts, product)
+    promotions_and_discounts[product] ? promotions_and_discounts[product].price : product[:price]
   end
 
-  def create_promotions
-    @promotions ? @promotions.map { |k| { @pricing_rules[k] => TowForOne.new(@pricing_rules[k]) } }.inject(:merge) : {}
-  end
-
-  def create_discounts
-    @discounts ? @discounts.map { |k| { @pricing_rules[k] => Discount.new(@pricing_rules[k], @products.count {|product| @pricing_rules[k] == product }) } }.inject(:merge) : {}
+  def create_promotions_and_discounts
+    @promotions_and_discounts.any? ? @promotions_and_discounts.map { |k|
+      { @pricing_rules[k] => PROMOTIONS_AND_DISCOUNTS[k].new(@pricing_rules[k], number_of_products: @products.count {|product| @pricing_rules[k] == product }) }
+    }.inject(:merge) : {}
   end
 end

@@ -1,5 +1,5 @@
 class TowForOne
-  def initialize(product)
+  def initialize(product, options)
     @product = product
     @i = 0
   end
